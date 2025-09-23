@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+use Illuminate\Support\Facades\Http;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class Askcontroller extends Controller
+{
+    public function sendMessage(Request $request)
+{
+    $userMessage = $request->input('message');
+
+    $response = Http::withHeaders([
+        'Content-Type' => 'application/json',
+        'x-goog-api-key' => env('GEMINI_API_KEY'), 
+    ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', [
+        'contents' => [[
+        'parts' => [[ 'text' => 
+                "أنت طبيب افتراضي متخصص في تقديم معلومات طبية عامة فقط.
+                تحدث بلغة المستخدم (سواء عربية فصحى أو عامية أو انجليزية ) وبأسلوب بسيط وواضح.
+                لا تستخدم مصطلحات معقدة، وتجنب إعطاء أسماء أدوية أو تشخيصات محددة.
+                إذا كان السؤال خارج نطاق المعلومات العامة، أو يحتاج تدخل طبي مباشر،
+                انصح المستخدم بلطف بمراجعة طبيب حقيقي.
+                تأكد أن يكون الرد صحيحًا ومفهومًا، وخاليًا من الأخطاء أو الكلمات الغريبة.\n\n".
+                "سؤال المستخدم: ".$userMessage
+            ]]
+        ]]
+    ]);
+
+    if ($response->successful()) {
+        $aiReply = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? 'No response from AI.';
+
+        return response()->json([
+            ['message' => $aiReply, 'is_from_user' => false]
+        ]);
+    } else {
+        return response()->json([
+            ['message' => 'Sorry, something went wrong with Gemini AI service.', 'is_from_user' => false]
+        ]);
+    }
+}
+}
+// if ($response->successful()) {
+//             $aiReply = $response->json()['candidates'][0]['content']['parts'][0]['text'] ?? 'No response from AI.';
+
+//             return response()->json([
+//                 'success' => true,
+//                 'user_message' => $userMessage,
+//                 'ai_reply' => $aiReply
+//             ]);
+//         } else {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'Sorry, something went wrong with Gemini AI service.'
+//             ], 500);
+//         }
