@@ -1,66 +1,123 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Clinic 
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Description
+This is a web-based system to manage clinic operations.  
+It allows admins, doctors, and patients to interact smoothly and efficiently.
 
-## About Laravel
+## Features
+* Department Management: The website is organized into multiple departments, and each department contains doctors.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* Doctor Management: Admin can add, edit, and delete doctors, as well as create accounts for them.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+* Manual Email Sending: When a new doctor is added, the system prepares a login email with credentials. The admin can review and edit this email before sending.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* Booking System: Patients can book appointments with doctors based on the available time slots set by each doctor.
 
-## Learning Laravel
+* Booking Reminder: An automatic email reminder is sent to the patient 24 hours before their appointment.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* Doctor Ratings: Patients can rate and review doctors after their appointments.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+* AI Chat: Patients can interact with an AI-powered chatbot to ask for medical information.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* Patient Profile: Patients have a profile page where they can view their personal information and all their bookings.
 
-## Laravel Sponsors
+* Doctor Application Form: Doctors who want to join the platform can submit their information through an application form, which is reviewed by the admin.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* Doctor Approval Workflow: Admin can accept or reject doctor applications. If accepted, the admin creates the doctor’s profile and login account (email + password), which is then sent to the doctor via email.
 
-### Premium Partners
+* Doctor Profile: Doctors have a dedicated profile page where they can:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+View their ratings and reviews.
 
-## Contributing
+Manage their personal data displayed on the site.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Update their session prices.
 
-## Code of Conduct
+View and manage patient bookings (cancel if needed).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Set their available schedule for appointments.
 
-## Security Vulnerabilities
+* Admin Dashboard: Admin can manage departments, doctors, bookings, and also add new admins.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Installation
+
+1. Clone the repository:
+   git clone https://github.com/nada-sheta/clinic.git
+   cd clinic
+
+2. Install dependencies:
+composer install
+npm install && npm run dev
+
+3. Copy the .env file:
+cp .env.example .env
+
+4. Generate application key:
+php artisan key:generate
+
+5. Set up your database in .env:
+DB_DATABASE=clinic
+DB_USERNAME=root
+DB_PASSWORD=
+
+6. Run migrations:
+php artisan migrate --seed
+
+7. Serve the project:
+php artisan serve
+
+8. Mail (Mailtrap for testing)
+Configure Mailtrap in .env to send test emails:
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=clinic@example.com
+MAIL_FROM_NAME="Clinic System"
+
+9. Cloudinary (for image storage)
+Upload and manage images with Cloudinary:
+CLOUDINARY_URL=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+
+10. AI Chat API
+Enable chatbot using OpenRouter API:
+GEMINI_API_KEY=your_api_key
+
+11. Scheduler (Booking Reminder)
+To send reminder emails 24h before bookings, ensure the Laravel Scheduler is running.
+If using Linux, add this cron job:
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+
+If using Windows,, open a terminal inside your project folder and run:
+php artisan schedule:run
+php artisan schedule:work
+
+12. Queue Worker
+Some features (like sending emails) use Laravel queues.  
+Make sure you run the queue worker:
+
+On Linux (server):
+php artisan queue:work --tries=3
+
+On Windows (local development):
+php artisan queue:work
+
+## Usage
+Admins: Manage departments, doctors, bookings, and approve/reject doctors.
+
+Doctors: Create schedules, set session price, and manage bookings.
+
+Patients: Register, book appointments, chat with AI, rate doctors, and receive email reminders.
+
+## Tech Stack
+Backend: Laravel 10
+Frontend: Blade, TailwindCSS
+Database: MySQL
+Storage: Cloudinary
+Mail: Mailtrap
+AI: GEMINI API
 
 ## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is for educational purposes (graduation project).
