@@ -22,7 +22,7 @@ public function sendMessage(Request $request)
     $response = Http::withHeaders([
         'Content-Type' => 'application/json',
         'x-goog-api-key' => env('GEMINI_API_KEY'), 
-    ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', [
+    ])->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', [
         'contents' => [[
         'parts' => [[ 'text' => 
                 "أنت طبيب افتراضي متخصص في تقديم معلومات طبية عامة فقط.

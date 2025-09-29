@@ -12,5 +12,6 @@ class AbilityHelper
             // abort(403, 'You are not authorized to perform this action.');
            abort(403, 'Unauthorized');
         }
+        return $request->user();
     }
 }

@@ -14,7 +14,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
         (new \App\Http\Controllers\Mails\MailController)->send_reminder();
-    })->hourly();
+    })->everyMinute()
+;
 
     //     $schedule->call(function () {
     //     (new \App\Http\Controllers\Mails\MailController)->send_reminder();

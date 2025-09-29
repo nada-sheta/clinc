@@ -39,10 +39,16 @@ Set their available schedule for appointments.
 
 * Admin Dashboard: Admin can manage departments, doctors, bookings, and also add new admins.
 
+* API: The system provides an API for integration with other applications or mobile apps.
+
+* Google Login: Users can log in using their Google account.
+
+* Forget Password: Users can reset their password via email if they forget it.
+
 ## Installation
 
 1. Clone the repository:
-   git clone https://github.com/nada-sheta/clinic.git
+   git clone https://github.com/nada-sheta/clinc
    cd clinic
 
 2. Install dependencies:

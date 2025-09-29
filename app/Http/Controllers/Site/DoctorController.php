@@ -29,12 +29,40 @@ class DoctorController extends Controller
     public function show($doctorId)
     {
         $doctor = Doctor::with(['ratings.user'])->findOrFail($doctorId);
-        $schedules = DoctorSchedule::where('doctor_id', $doctorId)
-                ->get();
-        // dd($schedules->toArray());
+        $daysOfWeek = [
+            "sunday", "monday", "tuesday", "wednesday",
+            "thursday", "friday", "saturday"
+        ];
+
+        $schedules = [];
+        foreach ($doctor->schedule as $sch) {
+            $startIndex = array_search(strtolower($sch->day_from), $daysOfWeek);
+            $endIndex   = array_search(strtolower($sch->day_to), $daysOfWeek);
+
+            if ($endIndex < $startIndex) {
+                $endIndex += 7;
+            }
+
+            for ($i = $startIndex; $i <= $endIndex; $i++) {
+                $day = $daysOfWeek[$i % 7];
+
+                $availableHours = [];
+                $startHour = (int)date('H', strtotime($sch->time_from));
+                $endHour   = (int)date('H', strtotime($sch->time_to));
+
+                for ($h = $startHour; $h <= $endHour; $h++) {
+                    $availableHours[] = sprintf("%02d:00", $h);
+                }
+
+                $schedules[] = [
+                    'schedule_id'    => $sch->id,
+                    'day'            => $day,
+                    'available_hours'=> $availableHours
+                ];
+            }}
         return view('site.pages.booking', compact('doctor', 'schedules'));
     }
-
+    
     public function store(BookingRequest $request,$doctorId)
     {
         [$dayscheduleId, $dayName] = explode('_', $request->day);
@@ -60,6 +88,9 @@ class DoctorController extends Controller
                  ->setHour($hour)
                  ->setMinute(0)
                  ->setSecond(0);
+                 if ($bookingDate->lt(Carbon::now())) {
+                        $bookingDate->addWeek();
+                    }
                  $alreadyBooked = Booking::where('doctor_id', $doctorId)
                             ->where('booking_date', $bookingDate)
                             ->exists();

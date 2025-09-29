@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\AbilityHelper;
 use App\Http\Controllers\Controller;
+use App\Models\Doctor;
 use App\Models\Rating;
 use Illuminate\Http\Request;
 
 class RatingController extends Controller
 {
-    public function show_rating(Request $request)
+    public function show(Request $request)
     {
     AbilityHelper::authorize($request, 'doctor');
     $doctor = $request->user()->doctor()->with(['ratings.user'])->firstOrFail();
@@ -33,6 +34,29 @@ class RatingController extends Controller
         'message' => 'Rate deleted successfully'
         ]);
     }
+
+    public function show_rating(Request $request,Doctor $doctor)
+    {
+        AbilityHelper::authorize($request, 'user');
+        $doctor = $doctor->load(['ratings.user']);
+        return response()->json([
+            'doctor' => [
+                'name'        => $doctor->name,
+                'image'       => $doctor->image,
+                'description' => $doctor->description,
+                'ratings'     => $doctor->ratings->map(function ($rating) {
+                    return [
+                        'rating'  => $rating->rating,
+                        'comment' => $rating->comment,
+                        'user'    => [
+                            'name'     => $rating->user->name,
+                        ]
+                    ];
+                }),
+            ]
+        ]);
+      }
+
     public function store_rate(Request $request,$doctor)
     {
         AbilityHelper::authorize($request, 'user');

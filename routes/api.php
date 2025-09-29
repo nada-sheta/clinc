@@ -3,9 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Askcontroller;
+use App\Http\Controllers\Api\Auth\GoogleController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\DoctorController;
-use App\Http\Controllers\API\LoginController;
+use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\LogoutController;
 use App\Http\Controllers\Api\MajorController;
 use App\Http\Controllers\Api\RegisterController;
@@ -14,12 +15,9 @@ use App\Http\Controllers\Api\ProfileUserController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DoctorRequestsController;
 use App\Http\Controllers\Api\Mail\Mailcontroller;
+use App\Http\Controllers\Api\PasswordResetLinkController;
 use App\Http\Controllers\Api\RatingController;
 use App\Http\Controllers\Api\Schedulecontroller;
-
-// Route::delete('/booking/{booking}',[ProfileUserController::class,'destroy'])->name('booking.destroy');
-// Route::delete('/bookings/doctor/{booking}',[ProfileDoctorController::class,'destroy'])->name('booking.doctor.destroy');
-// Route::post('/doctors/booking/{doctorId}', [DoctorController::class, 'store'])->name('doctors.store');
 
 Route::get('/majors',[MajorController::class,'index']);
 Route::get('/doctors',[DoctorController::class,'index']);
@@ -28,6 +26,10 @@ Route::post('/doctor/application/form', [DoctorRequestsController::class, 'store
 Route::post('/chat/send', [Askcontroller::class, 'sendMessage']);
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [PasswordResetLinkController::class, 'reset']);
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 
 Route::middleware('auth:sanctum')->group(function(){
@@ -50,10 +52,15 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('/manage/schedule',[Schedulecontroller::class,'store']);
     Route::delete('/destroy/schedule/{slot}',[ScheduleController::class,'destroy']);
     Route::get('/schedules',[ScheduleController::class,'show']);
-    Route::get('/show/ratings',[RatingController::class,'show_rating']);
+    Route::get('/schedules/{doctor}',[ScheduleController::class,'show_schedule']);
+    Route::get('/show/ratings',[RatingController::class,'show']);
+    Route::get('/show/ratings/{doctor}',[RatingController::class,'show_rating']);
     Route::delete('/destroy/rate/{rate}',[RatingController::class,'destroy_rate']);
     Route::post('/store/rate/{doctor}',[RatingController::class,'store_rate']);
-    Route::get('/show/booking/{doctorId}', [BookingController::class, 'show']);
+    Route::get('/show/booking/{doctor}', [BookingController::class, 'show']);
+    Route::post('/store/booking/{doctorId}', [BookingController::class, 'store']);
+    Route::delete('delete/booking/user/{booking}',[BookingController::class,'destroyFromUser']);
+    Route::delete('delete/booking/doctor/{booking}',[BookingController::class,'destroyFromDoctor']);
 });
     
     

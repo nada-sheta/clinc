@@ -1,11 +1,10 @@
 <?php
 
+use App\Http\Controllers\AuthGoogle\GoogleController;
 use Illuminate\Support\Facades\Route;
-use App\Models\Booking;
 use App\Http\Controllers\Site\HomeController;
 use App\Http\Controllers\Site\MajorController;
 use App\Http\Controllers\Site\DoctorController;
-use App\Http\Controllers\Site\BookingController;
 use App\Http\Controllers\Site\LoginController;
 use App\Http\Controllers\Site\LogoutController;
 use App\Http\Controllers\Site\RegisterController;
@@ -17,13 +16,18 @@ use App\Http\Controllers\Dashboard\AdminLoginController;
 use App\Http\Controllers\Dashboard\DoctorRequestsController;
 use App\Http\Controllers\Mails\MailController;
 use App\Http\Controllers\Site\AskController;
+use App\Http\Controllers\Site\PasswordResetLinkController;
 use App\Http\Controllers\Site\ProfileUserController;
 use App\Http\Controllers\Site\ProfileDoctorController;
 use App\Http\Controllers\Site\ScheduleController;
-use Illuminate\Console\Scheduling\Schedule;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/',[HomeController::class,'index'])->name('site.home');
+Route::get('forgot-password', [PasswordResetLinkController::class, 'show'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetLinkController::class, 'create'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetLinkController::class, 'updatePassword'])->name('password.update');
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 // SITE
 Route::prefix('CLINC')->group(function(){
