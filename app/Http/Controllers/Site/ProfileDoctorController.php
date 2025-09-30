@@ -24,7 +24,7 @@ class ProfileDoctorController extends Controller
         $doctor = auth()->user();
         $bookings = Booking::whereHas('doctor.user', function($query) use ($doctor) {
         $query->where('id', $doctor->id);
-        })->with(['doctor.user'])->get();
+        })->with(['doctor.user'])->where('booking_date', '>=', now())->get();
 
         return view("site.pages.profile_doctor",compact('bookings','doctor'));
     }

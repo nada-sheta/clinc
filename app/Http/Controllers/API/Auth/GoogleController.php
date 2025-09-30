@@ -8,55 +8,50 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Exception; // أو use Illuminate\Foundation\Exceptions\Handler;
 
-class GoogleController extends Controller
-{
-    // public function redirectToGoogle()
-    // {
-    //     /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
-    //     $driver = Socialite::driver('google');
-    //     $url = $driver->stateless()->redirect()->getTargetUrl();
+class GoogleController extends Controller{
+//    public function redirectToGoogle()
+//     {
+//         $url = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
+//         return response()->json([
+//             'status' => 'success',
+//             'redirect_url' => $url
+//         ], 200);
+//     }
 
-    //     $url = Socialite::driver('google')
-    //                 ->stateless() 
-    //                 ->redirect()
-    //                 ->getTargetUrl(); 
+//     public function handleGoogleCallback()
+//     {
+//         try {
+//             $googleUser = Socialite::driver('google')->stateless()->user();
 
-    //     return response()->json([
-    //         'url' => $url
-    //     ]);
-    // }
-    // public function handleGoogleCallback(Request $request)
-    // {
-    //     try {
-    //         $googleUser = Socialite::driver('google')->stateless()->user();
+//             $user = User::where('email', $googleUser->getEmail())->first();
 
-    //        $user = User::where('email', $googleUser->getEmail())->first();
+//             if (!$user) {
+//                 $user = User::create([
+//                     'name' => $googleUser->getName(),
+//                     'email' => $googleUser->getEmail(),
+//                     'password' => bcrypt(Str::random(16)),
+//                 ]);
+//             }
 
-    //         if (!$user) {
-    //             $user = User::create([
-    //                 'name'     => $googleUser->getName(),
-    //                 'email'    => $googleUser->getEmail(),
-    //                 'password' => bcrypt(Str::random(16)),
-    //                 //Str::random(16)
-    //                 //دي بتولد سلسلة عشوائية طولها 16 حرف
-    //                 //bcrypt(...)
-    //                 //دي بتعمل هاش للباسورد اللي اتولد
-    //             ]);
-    //         }
+//             Auth::login($user);
 
-    //         // لو عندك Sanctum أو Passport
-    //         $token = $user->createToken('api-token')->plainTextToken;
+//             $token = $user->createToken('API Token')->plainTextToken;
 
-    //         return response()->json([
-    //             'user'  => $user,
-    //             'token' => $token
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'error' => 'Google login failed!',
-    //             'message' => $e->getMessage()
-    //         ], 400);
-    //     }
-    // }
+//             return response()->json([
+//                 'status' => 'success',
+//                 'message' => $user->wasRecentlyCreated ? 'تم إنشاء الحساب بنجاح باستخدام جوجل' : 'تم تسجيل الدخول بنجاح',
+//                 'user' => $user,
+//                 'token' => $token
+//             ], 200);
+
+//         } catch (Exception $e) {
+//             return response()->json([
+//                 'status' => 'error',
+//                 'message' => 'فشل تسجيل الدخول باستخدام جوجل',
+//                 'error' => $e->getMessage()
+//             ], 401);
+//         }
+//     }
 }

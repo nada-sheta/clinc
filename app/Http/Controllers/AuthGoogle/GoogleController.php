@@ -34,12 +34,13 @@ class GoogleController extends Controller
                     //bcrypt(...)
                     //دي بتعمل هاش للباسورد اللي اتولد
                 ]);
+                Auth::login($user);
+                return redirect()->route('profile.user')->with('success', 'Welcome! Account created via Google.');
             }
 
-
             Auth::login($user);
-
             return redirect()->route('profile.user'); 
+            
         } catch (\Exception $e) {
             return redirect()->route('login.show')->with('error', 'Google login failed!');
         }

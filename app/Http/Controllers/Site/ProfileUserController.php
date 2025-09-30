@@ -20,7 +20,7 @@ public function profile_user()
 {
     if (Gate::allows('is-user')) {
         $user = auth()->user(); 
-        $bookings = Booking::with('doctor')
+        $bookings = Booking::with('doctor')->where('booking_date', '>=', now())
         ->where('user_id', $user->id)
         ->get();
         return view("site.pages.profile_user", compact('bookings','user'));
