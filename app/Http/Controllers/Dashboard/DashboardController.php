@@ -84,18 +84,4 @@ class DashboardController extends Controller
         $request->delete();
         return redirect()->back();
     }
-
-    public function index2()
-    {
-
-    // الإيرادات: عدد حجوزات كل دكتور × سعره
-    $doctorRevenues = Doctor::withCount('bookings')
-        ->get()
-        ->map(function ($doctor) {
-            return [
-                'name' => $doctor->user->name,
-                'total_revenue' => $doctor->bookings_count * $doctor->price,
-            ];
-        });
-}
 }
