@@ -21,7 +21,6 @@
                     <h6 class="card-title text-center">Booking Price : {{$doctor->booking_price}}</h6>
                             {{-- متوسط التقييم --}}
                             <p class="text-center">
-                                
                                 @if($doctor->ratings_avg_rating)
                                 @php
                                     $rating = round($doctor->ratings_avg_rating); // نقرب المتوسط لأقرب عدد صحيح

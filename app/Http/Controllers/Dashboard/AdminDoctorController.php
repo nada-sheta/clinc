@@ -15,7 +15,7 @@ class AdminDoctorController extends Controller
 {
     public function index()
     {
-        $doctors = Doctor::with('major')->get();
+        $doctors = Doctor::with('major')->withAvg('ratings', 'rating')->get();
         return view("dashboard.pages.doctors",compact('doctors'));
     }     
     public function create($id = null)

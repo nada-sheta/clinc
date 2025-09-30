@@ -41,6 +41,8 @@
                 <th>Major</th>
                 <th>Description</th>
                 <th>Booking_price</th>
+                <th>Average rating</th>
+
               </tr>
             </thead>
             <tbody>
@@ -52,6 +54,24 @@
                          class="profile-user-img img-fluid img-circle" alt="major"></td>
                 <td>{{$doctor->major->name}}</td>
                 <td>{{$doctor->description}}</td>
+                <td>
+                  <p class="text-center">
+                  @if($doctor->ratings_avg_rating)
+                      @php
+                          $rating = round($doctor->ratings_avg_rating); // نقرب المتوسط لأقرب عدد صحيح
+                      @endphp
+                    @for ($i = 1; $i <= 5; $i++)
+                        @if ($i <= $rating)
+                            <span style="color: gold; font-size:20px;">&#9733;</span> {{-- نجم متلوّن --}}
+                        @else
+                            <span style="color: #ccc; font-size:20px;">&#9733;</span> {{-- نجم فاضي --}}
+                        @endif
+                    @endfor
+                  @else
+                      <span style="color: #999;">No ratings yet</span>
+                  @endif
+                 </p>
+                </td>
                 <td>{{$doctor->booking_price}}</td>
                 <td>
                   <a class="btn btn-secondary" href="{{route('dashboard.doctors.edit',$doctor->id)}}" >Edit</a>

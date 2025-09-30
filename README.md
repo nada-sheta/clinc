@@ -37,7 +37,13 @@ View and manage patient bookings (cancel if needed).
 
 Set their available schedule for appointments.
 
-* Admin Dashboard: Admin can manage departments, doctors, bookings, and also add new admins.
+* Admin Dashboard:
+
+ Admin can manage departments, doctors, bookings, and also add new admins.
+
+ View booking statistics (daily, weekly, monthly, yearly).
+
+ Monitor doctors’ ratings and top-rated doctors.
 
 * API: The system provides an API for integration with other applications or mobile apps.
 

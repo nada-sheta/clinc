@@ -76,6 +76,9 @@ Route::prefix('CLINC')->group(function(){
 Route::prefix('dashboard')->as('dashboard.')->group(function () {
     Route::middleware('auth:admin')->group(function(){
         Route::get('/home', [DashboardController::class, 'index'])->name('home');
+        Route::get('/dashboard/patients', [DashboardController::class, 'patients'])->name('patients');
+        Route::get('/dashboard/bookings', [DashboardController::class, 'bookings'])->name('bookings');
+        Route::get('/dashboard/ratings', [DashboardController::class, 'ratings'])->name('ratings');
         Route::get('/majors', [AdminMajorController::class, 'index'])->name('majors');
         Route::get('/majors/create', [AdminMajorController::class, 'create'])->name('majors.create');
         Route::post('/majors', [AdminMajorController::class, 'store'])->name('majors.store');
@@ -95,6 +98,7 @@ Route::prefix('dashboard')->as('dashboard.')->group(function () {
         Route::get('/accept/edit/mail', [MailController::class, 'edit_mail'])->name('edit.mail');
         Route::post('/accept/mail/{id}', [MailController::class, 'send_accept'])->name('send.mail.accept');
         Route::delete('/doctors/request/{request}',[DashboardController::class,'destroy'])->name('doctor.request.destroy');
+
     }); 
     Route::get('/login', [AdminLoginController::class, 'show'])->name('login.show');
     Route::post('/login', [AdminLoginController::class, 'auth'])->name('login.auth');
