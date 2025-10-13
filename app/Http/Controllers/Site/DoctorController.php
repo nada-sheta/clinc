@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Site;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Rating;
@@ -139,5 +140,30 @@ class DoctorController extends Controller
         return redirect()->route('profile.user')->with('success', 'Rating submitted successfully.');
     }
 
+    public function searchDoctors(Request $request)
+    {
+        $query = $request->input('query');
+
+        $doctors = Doctor::with('major')
+            ->where('name', 'LIKE', "%{$query}%")
+            ->withAvg('ratings', 'rating')
+            ->get();
+
+        // نحول الداتا عشان تبقى جاهزة للـ JS
+        $doctors->transform(function($doctor){
+            return [
+                'id' => $doctor->id,
+                'name' => $doctor->name,
+                'booking_price' => $doctor->booking_price,
+                'image' => FileHelper::profile_image($doctor->image),
+                'major_name' => $doctor->major->name,
+                'ratings_avg_rating' => $doctor->ratings_avg_rating ?? 0,
+            ];
+        });
+
+        return response()->json([
+            'doctors' => $doctors
+        ]);
+    }
 
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\CreateAccountRequest;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Doctor;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -23,7 +24,13 @@ public function profile_user()
         $bookings = Booking::with('doctor')->where('booking_date', '>=', now())
         ->where('user_id', $user->id)
         ->get();
-        return view("site.pages.profile_user", compact('bookings','user'));
+        $notifications = Notification::where('user_id', $user->id)
+                        ->latest()
+                        ->get();
+        $unreadCount = Notification::where('user_id', $user->id)
+                        ->where('is_read', false)
+                        ->count();
+        return view("site.pages.profile_user", compact('bookings','user','notifications','unreadCount'));
         // return dd($user->id) ;
     }
     else{
@@ -34,8 +41,16 @@ public function profile_user()
 }
     public function destroy(Booking $booking)
     {
+        Notification::create([
+            'user_id' => $booking->doctor->user->id, // الدكتور اللي هيوصل له النوتفكيشن
+            'title'   => 'Booking Deleted',
+            'message' => 'The patient ' .
+                         $booking->name .
+                        ' has deleted the booking on ' .
+                         $booking->booking_date->format('Y-m-d H:i'),
+        ]);
         $booking->delete();
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Booking deleted successfully');
     }
     public function edit_name(User $user)
     {

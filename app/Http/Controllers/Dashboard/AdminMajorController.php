@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MajorRequest;
 use Illuminate\Http\Request;
@@ -56,5 +57,29 @@ class AdminMajorController extends Controller
         }
         $major->update($data);
         return redirect()->route('dashboard.majors')->with('success', 'Update completed');
+    }
+    public function searchMajors(Request $request)
+    {
+        $query = $request->input('query');
+
+        // ✅ لو المستخدم مدخلش أي حاجة، مترجّعش دكاترة
+        if ($query === '') {
+            return response()->json(['majors' => []]);
+        }
+
+        $majors = Major::where('name', 'LIKE', "%{$query}%")->get();
+
+        // نحول الداتا عشان تبقى جاهزة للـ JS
+        $majors->transform(function($major){
+            return [
+                'id' => $major->id,
+                'name' => $major->name,
+                'image' => FileHelper::major_image($major->image),
+            ];
+        });
+
+        return response()->json([
+            'majors' => $majors
+        ]);
     }
 }

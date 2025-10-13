@@ -54,7 +54,74 @@
     <span id="toggleIcon">&#9776;</span>
 </button>
 
+<!-- 🔔 زرار الجرس + 💌 زرار الرسائل -->
+<div class="d-flex gap-3 align-items-center position-absolute" 
+     style="top: 12px; right: 40px; z-index:1100;">
 
+   <!-- زرار النوتفكيشن -->
+<div class="dropdown">
+    <button class="btn bg-white border shadow-sm position-relative d-flex align-items-center justify-content-center"
+            id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+            title="Notifications" style="width:42px; height:42px; border-radius:8px;">
+        <i class="bi bi-bell text-primary fs-5"></i>
+
+        @if($unreadCount > 0)
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ $unreadCount }}
+            </span>
+        @endif
+    </button>
+
+    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown"
+        style="width:300px; max-height:350px; overflow-y:auto;">
+        
+        @forelse($notifications as $notification)
+            <li class="p-2 border-bottom notification-item {{ $notification->is_read ? '' : 'fw-bold unread' }}">
+                 @if(!$notification->is_read)
+                    <span class="me-2 mt-1 bg-primary rounded-circle" style="width:8px; height:8px; display:inline-block;"></span>
+                @else
+                    <span class="me-2 mt-1" style="width:8px; height:8px; display:inline-block;"></span>
+                @endif
+                <strong>{{ $notification->title }}</strong><br>
+                <small class="text-muted">{{ $notification->message }}</small><br>
+                <small class="text-secondary">
+                    {{ $notification->created_at->diffForHumans() }}
+                </small>
+            </li>
+        @empty
+            <li class="p-2 text-center text-muted">No Notifications</li>
+        @endforelse
+    </ul>
+</div>
+
+
+    <!-- زرار الرسائل -->
+    <div class="dropdown">
+        <button class="btn bg-white border shadow-sm position-relative d-flex align-items-center justify-content-center" 
+                id="messagesDropdown" data-bs-toggle="dropdown" aria-expanded="false" 
+                title="Messages" style="width:42px; height:42px; border-radius:8px;">
+            <i class="bi bi-envelope text-primary fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">2</span>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="messagesDropdown"
+            style="width:300px; max-height:350px; overflow-y:auto;">
+            <li class="p-2 border-bottom">
+                <strong>Dr. Ahmed</strong><br>
+                <small class="text-muted">Your results are ready.</small><br>
+                <small class="text-secondary">10 min ago</small>
+            </li>
+            <li class="p-2 border-bottom">
+                <strong>Dr. Sarah</strong><br>
+                <small class="text-muted">Reminder for your session tomorrow.</small><br>
+                <small class="text-secondary">3 hours ago</small>
+            </li>
+            <li class="text-center text-muted p-2">
+                <a href="#" class="text-decoration-none">View all messages</a>
+            </li>
+        </ul>
+    </div>
+</div>
 
 <!-- Overlay للموبايل -->
 <div id="sidebarOverlay" class="d-md-none" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;"></div>
@@ -88,6 +155,9 @@
 
 <!-- Wrapper للمحتوى -->
 <div class="container">
+     @if (session()->has('success'))
+            <div class="alert alert-success">{{session('success')}}</div> 
+    @endif
             <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="fw-bold my-4 h4">
                 <ol class="breadcrumb justify-content-center">
                     <li class="breadcrumb-item"><a class="text-decoration-none" href="{{route('site.home')}}">Home</a></li>
@@ -152,5 +222,33 @@
         }
     }
 </script>
+<script>
+document.getElementById('notificationDropdown').addEventListener('hide.bs.dropdown', function () {
+    fetch('{{ route('notifications.read') }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // شيل الرقم الأحمر بعد ما القائمة تتقفل
+            document.querySelector('.badge.bg-danger')?.remove();
+
+            // غير شكل النوتفكيشنات بعد ما القائمة تتقفل
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.classList.remove('fw-bold');
+                item.classList.remove('unread');
+                const dot = item.querySelector('.bg-primary');
+                if (dot) dot.style.visibility = 'hidden'; 
+            });
+        }
+    });
+});
+</script>
+
+
 
 @endsection

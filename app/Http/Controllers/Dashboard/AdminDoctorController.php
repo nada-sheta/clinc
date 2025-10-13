@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\FileHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Doctor;
 use App\Models\Major;
@@ -10,6 +11,7 @@ use App\Models\DoctorApplication;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class AdminDoctorController extends Controller
 {
@@ -92,6 +94,37 @@ class AdminDoctorController extends Controller
         }
         $doctor->update($data);
         return redirect()->route('dashboard.doctors')->with('success', 'Update completed');
+    }
+    public function searchDoctors(Request $request)
+    {
+        $query = $request->input('query');
+
+        // ✅ لو المستخدم مدخلش أي حاجة، مترجّعش دكاترة
+        if ($query === '') {
+            return response()->json(['doctors' => []]);
+        }
+
+        $doctors = Doctor::with('major')
+            ->where('name', 'LIKE', "%{$query}%")
+            ->withAvg('ratings', 'rating')
+            ->get();
+
+        // نحول الداتا عشان تبقى جاهزة للـ JS
+        $doctors->transform(function($doctor){
+            return [
+                'id' => $doctor->id,
+                'name' => $doctor->name,
+                'booking_price' => $doctor->booking_price,
+                'image' => FileHelper::profile_image($doctor->image),
+                'major_name' => $doctor->major->name,
+                'ratings_avg_rating' => $doctor->ratings_avg_rating ?? 0,
+                'description'=>$doctor->description
+            ];
+        });
+
+        return response()->json([
+            'doctors' => $doctors
+        ]);
     }
 
 }

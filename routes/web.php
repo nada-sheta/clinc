@@ -16,6 +16,7 @@ use App\Http\Controllers\Dashboard\AdminLoginController;
 use App\Http\Controllers\Dashboard\DoctorRequestsController;
 use App\Http\Controllers\Mails\MailController;
 use App\Http\Controllers\Site\AskController;
+use App\Http\Controllers\Site\NotificationController;
 use App\Http\Controllers\Site\PasswordResetLinkController;
 use App\Http\Controllers\Site\ProfileUserController;
 use App\Http\Controllers\Site\ProfileDoctorController;
@@ -57,6 +58,7 @@ Route::prefix('CLINC')->group(function(){
         Route::post('/manage/schedule/{doctorId}',[ScheduleController::class,'store'])->name('store.schedule');
         Route::delete('/destroy/schedule/{slot}',[ScheduleController::class,'destroy'])->name('doctor.schedule.destroy');
         Route::delete('/destroy/rate/{rate}',[ProfileDoctorController::class,'destroy_rate'])->name('rate.destroy');
+        Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     });
     Route::get('/majors',[MajorController::class,'index'])->name('site.majors');
     Route::get('/doctors',[DoctorController::class,'index'])->name('site.doctors');
@@ -65,6 +67,8 @@ Route::prefix('CLINC')->group(function(){
     Route::post('/doctor/application/form', [DoctorApplicationController::class, 'store'])->name('doctor.application.store');
     Route::get('/show/chat',[AskController::class,'show'])->name('show.chat');
     Route::post('/ask/send', [AskController::class, 'sendMessage'])->name('ask.send');
+    Route::get('/search-doctors', [DoctorController::class, 'searchDoctors'])->name('search.doctors');
+    Route::get('/search-majors', [MajorController::class, 'searchMajors'])->name('search.majors');
     Route::get('/register', [RegisterController::class, 'show'])->name('register.show');
     Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
     Route::get('/login', [LoginController::class, 'show'])->name('login.show');
@@ -98,7 +102,8 @@ Route::prefix('dashboard')->as('dashboard.')->group(function () {
         Route::get('/accept/edit/mail', [MailController::class, 'edit_mail'])->name('edit.mail');
         Route::post('/accept/mail/{id}', [MailController::class, 'send_accept'])->name('send.mail.accept');
         Route::delete('/doctors/request/{request}',[DashboardController::class,'destroy'])->name('doctor.request.destroy');
-
+        Route::get('/search-doctors', [AdminDoctorController::class, 'searchDoctors'])->name('search.doctors');
+        Route::get('/search-majors', [AdminMajorController::class, 'searchMajors'])->name('search.majors');
     }); 
     Route::get('/login', [AdminLoginController::class, 'show'])->name('login.show');
     Route::post('/login', [AdminLoginController::class, 'auth'])->name('login.auth');

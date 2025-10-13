@@ -26,6 +26,17 @@
       <div class="mb-3">
         <a href="{{route('dashboard.doctors.create')}}" class="btn btn-primary">Add New Doctor</a>
       </div>
+      {{-- 🔍 مربع البحث --}}
+        <div class="mb-4 d-flex justify-content-center">
+            <div class="input-group w-50">
+                <input type="text" id="search-input" class="form-control rounded-start"
+                        placeholder="Find a doctor...">
+                <span class="input-group-text bg-primary text-white rounded-end">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+        </div>
+
     <div class="card">
         <div class="card-header">
           <h3 class="card-title">Doctors Table</h3>
@@ -40,12 +51,12 @@
                 <th>Image</th>
                 <th>Major</th>
                 <th>Description</th>
-                <th>Booking_price</th>
                 <th>Average rating</th>
+                <th>Booking_price</th>
 
               </tr>
             </thead>
-            <tbody>
+            <tbody id="doctors-body">
                 @foreach ($doctors as $doctor)
               <tr>
                 <td>{{$doctor->id}}</td>
@@ -82,21 +93,66 @@
                     </form>
                 </td>
               </tr>
+              @endforeach
             </tbody>
-                @endforeach
           </table>
         </div>
-        <!-- /.card-body -->
-        {{-- <div class="card-footer clearfix">
-          <ul class="pagination pagination-sm m-0 float-right">
-            <li class="page-item"><a class="page-link" href="#">«</a></li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">»</a></li>
-          </ul>
-        </div> --}}
       </div>
     </div>
 </div>
+{{-- 🧠 JavaScript --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const doctorsBody = document.getElementById('doctors-body');
+    const originalHTML = doctorsBody.innerHTML;
+
+    searchInput.addEventListener('keyup', function() {
+        const query = this.value.trim();
+
+        // ✅ لو فاضي رجّع الجدول الأصلي
+        if (query === '') {
+            doctorsBody.innerHTML = originalHTML;
+            return;
+        }
+
+        fetch(`{{ route('dashboard.search.doctors') }}?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                let html = '';
+
+                if (data.doctors.length === 0) {
+                    html = `<tr><td colspan="8" class="text-center">No doctors found</td></tr>`;
+                } else {
+                    data.doctors.forEach(doctor => {
+                        html += `
+                        <tr>
+                            <td>${doctor.id}</td>
+                            <td>${doctor.name}</td>
+                            <td><img src="${doctor.image}" class="profile-user-img img-fluid img-circle" alt="doctor"></td>
+                            <td>${doctor.major_name}</td>
+                            <td>${doctor.description ?? ''}</td>
+                            <td>${doctor.average_rating ?? 'No ratings yet'}</td>
+                            <td>${doctor.booking_price}</td>
+                            <td>
+                                <a class="btn btn-secondary" href="doctors/${doctor.id}/edit">Edit</a>
+                                <form action="doctors/${doctor.id}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger">DELETE</button>
+                                </form>
+                            </td>
+                        </tr>`;
+                    });
+                }
+
+                doctorsBody.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error fetching doctors:', error);
+            });
+    });
+});
+</script>
+
 @endsection

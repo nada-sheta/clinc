@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\CreateAccountRequest;
+use App\Models\Notification;
 use App\Models\Rating;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Hash;
@@ -25,8 +26,15 @@ class ProfileDoctorController extends Controller
         $bookings = Booking::whereHas('doctor.user', function($query) use ($doctor) {
         $query->where('id', $doctor->id);
         })->with(['doctor.user'])->where('booking_date', '>=', now())->get();
+        
+        $notifications = Notification::where('user_id', $doctor->id)
+                        ->latest()
+                        ->get();
+        $unreadCount = Notification::where('user_id', $doctor->id)
+                        ->where('is_read', false)
+                        ->count();
 
-        return view("site.pages.profile_doctor",compact('bookings','doctor'));
+        return view("site.pages.profile_doctor",compact('bookings','doctor','notifications','unreadCount'));
     }
     else{
             Session::flush();
@@ -36,8 +44,16 @@ class ProfileDoctorController extends Controller
     }
     public function destroy(Booking $booking)
     {
+        Notification::create([
+            'user_id' => $booking->user->id, // اللي هيوصل له النوتفكيشن
+            'title'   => 'Booking Deleted',
+            'message' => 'The Doctor ' .
+                         $booking->doctor->name .
+                        ' has deleted the booking on ' .
+                         $booking->booking_date->format('Y-m-d H:i'),
+        ]);
         $booking->delete();
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Booking deleted successfully');
     }
     public function edit(User $doctor)
     {
